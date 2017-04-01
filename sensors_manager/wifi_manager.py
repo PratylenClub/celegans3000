@@ -12,3 +12,7 @@ for i in range(100):
 	time.sleep(0.5)
 
 """
+
+def time2distance(interface = "en0"):    # I just use en0 to test the function on mac
+	cmd = subprocess.Popen('tcpdump -c 4 -tttt -i en0 -n tcp | grep '\[\.\]' | sed -e 's/.*ack \(.*\)/\1/' | sed -e 's/,/ /' | awk  '{print $1}'') # Use Python to parse the data, it is neccesary to extract the timestamp the host IP and the Receptor IP, the seq and the tcp. Then is just resting the time.
+ 
