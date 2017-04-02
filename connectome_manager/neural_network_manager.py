@@ -3,7 +3,7 @@ import pickle as p
 import numpy as np
 INPUT_INDEX = 0
 OUTPUT_INDEX = 1
-INITIAL_CELL_STATE = 0
+INITIAL_CELL_STATE = []
 
 def connectome_data_to_NN_model(connectome_file,
 								muscles_file, 
@@ -21,13 +21,14 @@ def connectome_data_to_NN_model(connectome_file,
 	sensory_cells_2_sensors = p.load(open(sensory_cells_2_sensors_pickle,"rb"))
 
 	muscle_neurotransmitter_values = np.asarray(map(neurotransmitters.get,muscles["Neurotransmitter"]))
+
 	muscles["Weight"] = muscle_neurotransmitter_values * muscles["Number of Connections"]
+
 	muscles.iloc[:,OUTPUT_INDEX] = np.asarray(map(muscle_2_motor.get,muscles.iloc[:,OUTPUT_INDEX]))
 
 	sensory_neurotransmitter_values = np.asarray(map(neurotransmitters.get,connectome["Neurotransmitter"]))
 	connectome["Weight"] = sensory_neurotransmitter_values * connectome["Number of Connections"]
 	sensor.iloc[:,INPUT_INDEX] = np.asarray(map(sensory_cells_2_sensors.get,sensor.iloc[:,INPUT_INDEX]))
-
 
 	Neural_Network = {}
 	Cells_state = {}
