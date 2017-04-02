@@ -1,7 +1,7 @@
 import pickle as p
 import time
-#import robot_manager.robot as Robot
-#import sensors_manager.wifi_manager as wifi_manager
+import robot_manager.robot as Robot
+import sensors_manager.wifi_manager as wifi_manager
 import random
 SIGNAL=1.0
 
@@ -11,8 +11,8 @@ UPDATE = 2
 
 LEFT_TRIM   = 0
 RIGHT_TRIM  = 0
-TIME_STEP = 2
-THRESHOLD = 500
+TIME_STEP = 0.5
+THRESHOLD = 50
 BASAL_STATE = 0
 MAX_INIT_STATE = 10
 DELTA_POLARIZATION = 0.1
@@ -23,7 +23,7 @@ class NN:
 		self.cell_states = model["Cells_state"]
 		self.sens = ["ULTRA_SOUND"]
 		self.firing_neurons = []
-		#self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
+		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 		self.brain = {}
 		self.build_brain()
 		self.initialize_brain()
@@ -81,7 +81,7 @@ class NN:
 		if angular_speed < 50: angular_speed = 50
 		angular_time = TIME_STEP
 		#print angular_speed
-		robot.right(int(angular_speed), angular_time)
+		self.body.right(int(angular_speed), angular_time)
 
 	def excite_muscle_left(self,muscle,weight,signal=SIGNAL):
 		angular_speed = weight*signal*10
@@ -89,7 +89,7 @@ class NN:
 		if angular_speed < 50: angular_speed = 50
 		angular_time = TIME_STEP
 		#print angular_speed
-		robot.left(int(angular_speed), angular_time)
+		self.body.left(int(angular_speed), angular_time)
 
 	def fire_action(self,neuron_firing):
 		for neuron_receptor in self.brain[neuron_firing]:
