@@ -14,7 +14,7 @@
 12,Acetylcholine,1
 13,FRMFemide,1
 14,Serotonin_Acetylcholine,1
-15,GABA_GJ,1
+15,GABA_GJ,-1
 16,FRMFemide_GJ,1
 17,Glutamate_GJ,1
 18,Acetylcholine_Tyramine_GJ,1
@@ -24,4 +24,4 @@
 22,Dopamine,1
 23,"Acetylcholine, Tyramine",1
 24,Glutamate,1
-25,GABA,1
+25,GABA,-1
