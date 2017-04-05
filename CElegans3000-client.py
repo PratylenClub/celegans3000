@@ -42,7 +42,7 @@ class Body:
 	def get_sensory_signals(self):
 		#wifi_signal = wifi_manager.get_wifi_quality()
 		ultra_sound_signal = ultra_sound.return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
-		return {"ULTRA_SOUND":wifi_signal}
+		return {"ULTRA_SOUND":ultra_sound_signal}
 
 	def run(self):
 		while 1:
