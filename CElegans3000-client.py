@@ -28,14 +28,14 @@ class Body:
 		if angular_speed>200: angular_speed = 200
 		if angular_speed<80: angular_speed = 80
 		angular_time=0.5
-		self.body.right(int(angular_speed), angular_time)
+		self.body.only_right(int(angular_speed), angular_time)
 
 	def run_left_motor(self,weight,signal):
 		angular_speed = signal*weight*20
 		if angular_speed>200: angular_speed = 200
 		if angular_speed<80: angular_speed = 80
 		angular_time=0.5
-		self.body.left(int(angular_speed), angular_time)
+		self.body.only_left(int(angular_speed), angular_time)
 
 	def get_sensory_signals(self):
 		wifi_signal = wifi_manager.get_wifi_quality()
