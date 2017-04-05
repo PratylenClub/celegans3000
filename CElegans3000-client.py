@@ -3,9 +3,10 @@
 import socket
 import time
 import pickle
-#import robot_manager.robot as Robot
-#import sensors_manager.wifi_manager as wifi_manager
-
+import robot_manager.robot as Robot
+import sensors_manager.wifi_manager as wifi_manager
+LEFT_TRIM   = 0
+RIGHT_TRIM  = 0
 TCP_IP = '192.168.43.156'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
@@ -19,9 +20,24 @@ class Body:
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.connect((tcp_id, tcp_port))
 		self.motor_actions = {'MOTOR_RIGHT':print_me, 'MOTOR_LEFT':print_me}
+		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
+
+	def run_right_motor(signal,weight):
+		angular_time = signal*weight*20
+		if angular_speed>200: angular_speed = 200
+		if angular_speed<80: angular_speed = 80
+		angular_time=0.5
+		self.body.right(int(angular_speed), angular_time)
+
+	def run_left_motor(signal,weight):
+		angular_speed = signal*weight*20
+		if angular_speed>200: angular_speed = 200
+		if angular_speed<80: angular_speed = 80
+		angular_time=0.5
+		self.body.left(int(angular_speed), angular_time)
 
 	def get_sensory_signals(self):
-		wifi_signal = 70#wifi_manager.get_wifi_quality()
+		wifi_signal = wifi_manager.get_wifi_quality()
 		return {"ULTRA_SOUND":wifi_signal}
 
 	def run(self):
