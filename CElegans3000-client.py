@@ -12,14 +12,15 @@ TCP_PORT = 5005
 BUFFER_SIZE = 1024
 END_TASK_SIGNAL = "END_TASK"
 
-def print_me(a):
+def print_me(*a):
 	print a
 
 class Body:
 	def __init__(self,tcp_id=TCP_IP,tcp_port=TCP_PORT):
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.connect((tcp_id, tcp_port))
-		self.motor_actions = {'MOTOR_RIGHT':print_me, 'MOTOR_LEFT':print_me}
+		#self.motor_actions = {'MOTOR_RIGHT':print_me, 'MOTOR_LEFT':print_me}
+		self.motor_actions = {'MOTOR_RIGHT':self.run_right_motor, 'MOTOR_LEFT':self.run_left_motor}
 		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 
 	def run_right_motor(signal,weight):
@@ -53,7 +54,7 @@ class Body:
 				print "receving: ",order
 				if END_TASK_SIGNAL == order[0]:
 					break
-				self.motor_actions[order[0]](order[1])
+				self.motor_actions[order[0]](*order[1])
 			die = order[1]
 			print die
 			if die[0]:
