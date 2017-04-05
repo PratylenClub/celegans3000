@@ -24,7 +24,7 @@ class Body:
 		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 
 	def run_right_motor(self,weight,signal):
-		angular_time = signal*weight*20
+		angular_speed = signal*weight*20
 		if angular_speed>200: angular_speed = 200
 		if angular_speed<80: angular_speed = 80
 		angular_time=0.5
