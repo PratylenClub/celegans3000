@@ -139,7 +139,7 @@ class NN:
 		self.conn.close()
 
 nn = NN("connectome_manager/models/celegans3000.pickle")
-nn.run(5)
+nn.run(10)
 
 
 
