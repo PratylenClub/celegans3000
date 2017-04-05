@@ -5,7 +5,7 @@ import time
 import pickle
 import robot_manager.robot as Robot
 import sensors_manager.wifi_manager as wifi_manager
-import sensors_manager.ultra_sound as return_distance_to_obstacle
+import sensors_manager.ultra_sound as ultra_sound
 LEFT_TRIM   = 0
 RIGHT_TRIM  = 0
 TCP_IP = '192.168.43.156'
@@ -41,7 +41,7 @@ class Body:
 
 	def get_sensory_signals(self):
 		#wifi_signal = wifi_manager.get_wifi_quality()
-		ultra_sound_signal = return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
+		ultra_sound_signal = ultra_sound.return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
 		return {"ULTRA_SOUND":wifi_signal}
 
 	def run(self):
