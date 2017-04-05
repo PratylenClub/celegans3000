@@ -27,6 +27,7 @@ def return_distance_to_obstacle(nb_trials,delta_time):
         time.sleep(delta_time)           #Pequeña pausa para no saturar el procesador de la Raspberry
     GPIO.cleanup()                       #Limpiamos los pines GPIO y salimos
     return np.median(np.asarray(measures))
-    
+"""    
 for i in range(30):
     print return_distance_to_obstacle(10,0.1)
+"""

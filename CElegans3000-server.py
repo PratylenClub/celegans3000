@@ -86,14 +86,14 @@ class NN:
 	def excite_muscle_right(self,muscle,weight,signal=SIGNAL):
 		order_pickle = p.dumps(["MOTOR_RIGHT",(weight,signal)],-1)
 		print "sending ",["MOTOR_RIGHT",(weight,signal)]
-		time.sleep(1)
+		time.sleep(0.7)
 		self.conn.send(order_pickle)
 		#self.body.right(int(angular_speed), angular_time)
 
 	def excite_muscle_left(self,muscle,weight,signal=SIGNAL):
 		order_pickle = p.dumps(["MOTOR_LEFT",(weight,signal)],-1)
 		print "sending ", ["MOTOR_LEFT",(weight,signal)]
-		time.sleep(1)
+		time.sleep(0.7)
 		self.conn.send(order_pickle)
 		#self.body.left(int(angular_speed), angular_time)
 
@@ -125,7 +125,7 @@ class NN:
 		for cell in self.cell_states:
 			self.update_cell(cell)
 			self.polarize_cell(cell)
-		time.sleep(1)
+		time.sleep(0.7)
 		kill_signal = ["END_TASK",(kill_user,)]
 		print "sending ", kill_signal
 		self.conn.send(p.dumps(kill_signal,-1))

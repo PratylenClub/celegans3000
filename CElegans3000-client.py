@@ -5,13 +5,15 @@ import time
 import pickle
 import robot_manager.robot as Robot
 import sensors_manager.wifi_manager as wifi_manager
+import sensors_manager.ultra_sound as return_distance_to_obstacle
 LEFT_TRIM   = 0
 RIGHT_TRIM  = 0
 TCP_IP = '192.168.43.156'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 END_TASK_SIGNAL = "END_TASK"
-
+NB_TRIALS_ULTRASOUND = 5
+DELTA_TIME_ULTRASOUND = 0.1
 def print_me(*a):
 	print a
 
@@ -38,12 +40,13 @@ class Body:
 		self.body.only_left(int(angular_speed), angular_time)
 
 	def get_sensory_signals(self):
-		wifi_signal = wifi_manager.get_wifi_quality()
+		#wifi_signal = wifi_manager.get_wifi_quality()
+		ultra_sound_signal = return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
 		return {"ULTRA_SOUND":wifi_signal}
 
 	def run(self):
 		while 1:
-			time.sleep(0.5)
+			#time.sleep(0.5)
 			sensorial_signal = self.get_sensory_signals()
 			sensorial_signal_pickle = pickle.dumps(sensorial_signal,-1)
 			print "sending: ", sensorial_signal
