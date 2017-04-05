@@ -23,14 +23,14 @@ class Body:
 		self.motor_actions = {'MOTOR_RIGHT':self.run_right_motor, 'MOTOR_LEFT':self.run_left_motor}
 		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 
-	def run_right_motor(signal,weight):
+	def run_right_motor(self,weight,signal):
 		angular_time = signal*weight*20
 		if angular_speed>200: angular_speed = 200
 		if angular_speed<80: angular_speed = 80
 		angular_time=0.5
 		self.body.right(int(angular_speed), angular_time)
 
-	def run_left_motor(signal,weight):
+	def run_left_motor(self,weight,signal):
 		angular_speed = signal*weight*20
 		if angular_speed>200: angular_speed = 200
 		if angular_speed<80: angular_speed = 80
