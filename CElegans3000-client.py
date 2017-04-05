@@ -43,7 +43,7 @@ class Body:
 
 	def run(self):
 		while 1:
-			time.sleep(1)
+			time.sleep(0.5)
 			sensorial_signal = self.get_sensory_signals()
 			sensorial_signal_pickle = pickle.dumps(sensorial_signal,-1)
 			print "sending: ", sensorial_signal
