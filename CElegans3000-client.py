@@ -45,9 +45,9 @@ class Body:
 		angular_speed_right = weight_right
 		angular_speed_left = weight_left
 		if angular_speed_left>250: angular_speed_left = 250
-		if angular_speed_left<10: angular_speed_left = 10
+		if angular_speed_left<40: angular_speed_left = 40
 		if angular_speed_right>250: angular_speed_right = 250
-		if angular_speed_right<10: angular_speed_right = 10
+		if angular_speed_right<40: angular_speed_right = 40
 		self.body.run_motors_forward(angular_speed_right, angular_speed_left,angular_time)
 
 	def get_sensory_signals(self):
