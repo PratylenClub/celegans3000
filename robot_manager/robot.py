@@ -117,6 +117,15 @@ class Robot(object):
             time.sleep(seconds)
             self.stop()
 
+    def run_motors_forward(self,speed_right,speed_left,seconds=None):
+        self._right_speed(speed_right)
+        self._right.run(Adafruit_MotorHAT.FORWARD)
+        self._left_speed(speed_left)
+        self._left.run(Adafruit_MotorHAT.FORWARD)
+        if seconds is not None:
+            time.sleep(seconds)
+            self.stop()
+
 
     def left(self, speed, seconds=None):
         """Spin to the left at the specified speed.  Will start spinning and
