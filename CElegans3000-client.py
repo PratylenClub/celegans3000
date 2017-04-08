@@ -41,13 +41,13 @@ class Body:
 
 	def run_motors(self,weight_right,weight_left):
 		print "RUN MOTORS",weight_right,weight_left
-		angular_time=1
+		angular_time=3
 		angular_speed_right = weight_right
 		angular_speed_left = weight_left
 		if angular_speed_left>250: angular_speed_left = 250
-		if angular_speed_left<50: angular_speed_left = 50
+		if angular_speed_left<10: angular_speed_left = 10
 		if angular_speed_right>250: angular_speed_right = 250
-		if angular_speed_right<50: angular_speed_right = 50
+		if angular_speed_right<10: angular_speed_right = 10
 		self.body.run_motors_forward(angular_speed_right, angular_speed_left,angular_time)
 
 	def get_sensory_signals(self):
