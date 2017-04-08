@@ -30,7 +30,7 @@ class NN:
 		self.brain = {}
 		self.build_brain()
 		self.initialize_brain()
-		self.muscles_values = {"MOTOR_RIGHT":0 "MOTOR_LEFT":0}
+		self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
 
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.bind((tcp_ip,tcp_port))
@@ -91,7 +91,7 @@ class NN:
 		order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
 		time.sleep(1.2)
 		self.conn.send(order_pickle)
-		self.muscles_values = {"MOTOR_RIGHT":0 "MOTOR_LEFT":0}
+		self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
 
 	def fire_action(self,neuron_firing,**params):
 		for neuron_receptor in self.brain[neuron_firing]:

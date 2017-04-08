@@ -12,7 +12,7 @@ TCP_IP = '192.168.43.156'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 END_TASK_SIGNAL = "END_TASK"
-NB_TRIALS_ULTRASOUND = 5
+NB_TRIALS_ULTRASOUND = 4
 DELTA_TIME_ULTRASOUND = 0.1
 def print_me(*a):
 	print a
@@ -40,18 +40,20 @@ class Body:
 		self.body.only_left(int(angular_speed), angular_time)
 
 	def run_motors(self,weight_right,weight_left):
+		print "RUN MOTORS",weight_right,weight_left
 		angular_time=1
 		angular_speed_right = weight_right
 		angular_speed_left = weight_left
-		if angular_speed_left>200: angular_speed_left = 200
-		if angular_speed_left<80: angular_speed_left = 80
-		if angular_speed_right>200: angular_speed_right = 200
-		if angular_speed_right<80: angular_speed_right = 80
+		if angular_speed_left>250: angular_speed_left = 250
+		if angular_speed_left<50: angular_speed_left = 50
+		if angular_speed_right>250: angular_speed_right = 250
+		if angular_speed_right<50: angular_speed_right = 50
 		self.body.run_motors_forward(angular_speed_right, angular_speed_left,angular_time)
 
 	def get_sensory_signals(self):
 		#wifi_signal = wifi_manager.get_wifi_quality()
 		ultra_sound_signal = ultra_sound.return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
+		print "ULTRA SOUND",ultra_sound_signal
 		return {"ULTRA_SOUND":ultra_sound_signal}
 
 	def run(self):
