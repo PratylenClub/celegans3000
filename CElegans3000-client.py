@@ -22,7 +22,7 @@ class Body:
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.connect((tcp_id, tcp_port))
 		#self.motor_actions = {'MOTOR_RIGHT':print_me, 'MOTOR_LEFT':print_me}
-		self.motor_actions = {'MOTOR_RIGHT':self.run_right_motor, 'MOTOR_LEFT':self.run_left_motor}
+		self.motor_actions = {'MOTOR_RIGHT':self.run_right_motor, 'MOTOR_LEFT':self.run_left_motor, 'MOTORS':self.run_motors}
 		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 
 	def run_right_motor(self,weight,signal):
@@ -38,6 +38,16 @@ class Body:
 		if angular_speed<80: angular_speed = 80
 		angular_time=0.5
 		self.body.only_left(int(angular_speed), angular_time)
+
+	def run_motors(self,weight_right,weight_left):
+		angular_time=1
+		angular_speed_right = weight_right
+		angular_speed_left = weight_left
+		if angular_speed_left>200: angular_speed_left = 200
+		if angular_speed_left<80: angular_speed_left = 80
+		if angular_speed_right>200: angular_speed_right = 200
+		if angular_speed_right<80: angular_speed_right = 80
+		self.body.run_motors_forward(,angular_time)
 
 	def get_sensory_signals(self):
 		#wifi_signal = wifi_manager.get_wifi_quality()
