@@ -47,7 +47,7 @@ class Body:
 		if angular_speed_left<80: angular_speed_left = 80
 		if angular_speed_right>200: angular_speed_right = 200
 		if angular_speed_right<80: angular_speed_right = 80
-		self.body.run_motors_forward(,angular_time)
+		self.body.run_motors_forward(angular_speed_right, angular_speed_left,angular_time)
 
 	def get_sensory_signals(self):
 		#wifi_signal = wifi_manager.get_wifi_quality()
