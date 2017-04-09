@@ -47,6 +47,7 @@ class Body:
 		self.body.run_motors_forward(int(angular_speed_right), int(angular_speed_left),angular_time)
 
 	def get_sensory_signals(self):
+		self.energy -= 10
 		wifi_signal = wifi_manager.get_wifi_quality()
 		ultra_sound_signal = ultra_sound.return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
 		print "ULTRA SOUND",ultra_sound_signal
