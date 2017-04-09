@@ -93,11 +93,11 @@ class NN:
 			self.firing_neurons.append(neuron_receptor)
 
 	def touch_nose_sensorial_stimulus(self,neuron_receptor,weight,signal=SIGNAL,threshold=THRESHOLD):
-		if signal < threshold: #closer than 7cm
+		if signal < 20: #closer than 20cm
 			self.firing_neurons.append(neuron_receptor)
 
 	def sensorial_stimulus_food(self,neuron_receptor,weight,signal=SIGNAL,threshold=THRESHOLD):
-		self.sensorial_stimulus(neuron_receptor,weight,signal=signal*100,threshold = threshold)
+		self.sensorial_stimulus(neuron_receptor,weight,signal=signal,threshold = threshold)
 
 	def excite_muscles(self,):
 		order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
