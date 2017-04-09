@@ -100,10 +100,11 @@ class NN:
 		self.sensorial_stimulus(neuron_receptor,weight,signal=signal,threshold = threshold)
 
 	def excite_muscles(self,):
-		order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
-		time.sleep(1.2)
-		self.conn.send(order_pickle)
-		self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
+		if self.muscles_values["MOTOR_RIGHT"] + self.muscles_values["MOTOR_LEFT"] > 0:
+			order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
+			time.sleep(1.2)
+			self.conn.send(order_pickle)
+			self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
 
 	def fire_action(self,neuron_firing,**params):
 		for neuron_receptor in self.brain[neuron_firing]:
