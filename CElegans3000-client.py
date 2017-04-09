@@ -6,8 +6,8 @@ import pickle
 import robot_manager.robot as Robot
 import sensors_manager.wifi_manager as wifi_manager
 import sensors_manager.ultra_sound as ultra_sound
-LEFT_TRIM   = 30
-RIGHT_TRIM  = 30
+LEFT_TRIM   = 50
+RIGHT_TRIM  = 50
 TCP_IP = '192.168.43.156'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
