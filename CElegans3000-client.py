@@ -41,8 +41,8 @@ class Body:
 	def run_motors(self,weight_right,weight_left):
 		print "RUN MOTORS",weight_right,weight_left
 		angular_time=1
-		angular_speed_right = weight_right
-		angular_speed_left = weight_left
+		angular_speed_right = weight_right*10
+		angular_speed_left = weight_left*10
 		self.energy -= angular_time*(angular_speed_right + angular_speed_left)
 		self.body.run_motors_forward(int(angular_speed_right), int(angular_speed_left),angular_time)
 
