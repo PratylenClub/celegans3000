@@ -44,6 +44,11 @@ class NN:
 			self.brain[spiking] = {}
 			for receptor,weight in self.neural_network[spiking].iteritems():
 				if spiking == "ULTRA_SOUND":
+					self.brain[spiking][receptor] = {"function":touch_nose_sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+					#self.brain[spiking][receptor] = {"function":self.sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+				elif spiking == "WIFI_SIGNAL":
+					self.brain[spiking][receptor] = {"function":self.sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+				elif spiking == "NO_SIGNAL":
 					self.brain[spiking][receptor] = {"function":self.sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
 				else:
 					if receptor == "MOTOR_LEFT":
@@ -85,6 +90,10 @@ class NN:
 		self.cell_states[neuron_receptor][NEXT_STATE] = self.cell_states[neuron_receptor][CURRENT_STATE]+sensorial_signal
 		self.cell_states[neuron_receptor][UPDATE] = True
 		if self.cell_states[neuron_receptor][NEXT_STATE] >= THRESHOLD:
+			self.firing_neurons.append(neuron_receptor)
+
+	def touch_nose_sensorial_stimulus(self,neuron_receptor,weight,signal=SIGNAL,threshold=THRESHOLD):
+		if signal < threshold: #closer than 7cm
 			self.firing_neurons.append(neuron_receptor)
 
 	def excite_muscles(self,):
