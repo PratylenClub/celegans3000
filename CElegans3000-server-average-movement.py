@@ -44,7 +44,7 @@ class NN:
 			self.brain[spiking] = {}
 			for receptor,weight in self.neural_network[spiking].iteritems():
 				if spiking == "ULTRA_SOUND":
-					self.brain[spiking][receptor] = {"function":touch_nose_sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+					self.brain[spiking][receptor] = {"function":self.touch_nose_sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
 					#self.brain[spiking][receptor] = {"function":self.sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
 				elif spiking == "WIFI_SIGNAL":
 					self.brain[spiking][receptor] = {"function":self.sensorial_stimulus_food,"parameters":{"neuron_receptor":receptor,"weight":weight}}
@@ -97,8 +97,7 @@ class NN:
 			self.firing_neurons.append(neuron_receptor)
 
 	def sensorial_stimulus_food(self,neuron_receptor,weight,signal=SIGNAL,threshold=THRESHOLD):
-		if self.body.energy < 10:
-			self.sensorial_stimulus(neuron_receptor,weight,signal=signal,threshold = threshold)
+		self.sensorial_stimulus(neuron_receptor,weight,signal=signal*100,threshold = threshold)
 
 	def excite_muscles(self,):
 		order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)

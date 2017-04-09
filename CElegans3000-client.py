@@ -6,8 +6,8 @@ import pickle
 import robot_manager.robot as Robot
 import sensors_manager.wifi_manager as wifi_manager
 import sensors_manager.ultra_sound as ultra_sound
-LEFT_TRIM   = 0
-RIGHT_TRIM  = 0
+LEFT_TRIM   = 50
+RIGHT_TRIM  = 50
 TCP_IP = '192.168.43.156'
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
@@ -52,7 +52,7 @@ class Body:
 		print "ULTRA SOUND",ultra_sound_signal
 		print "WIFI_SIGNAL",wifi_signal
 		print "FOOD_LEVEL",self.energy
-		return {"ULTRA_SOUND":ultra_sound_signal, "WIFI_SIGNAL":wifi_signal}#, "FOOD_LEVEL":self.energy}
+		return {"ULTRA_SOUND":ultra_sound_signal, "WIFI_SIGNAL":(max(100,self.energy)-self.energy)*wifi_signal}#, "FOOD_LEVEL":self.energy}
 
 	def run(self):
 		while 1:
