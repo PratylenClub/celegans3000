@@ -2,4 +2,4 @@
 
 ## Parameter setting
 
-+ Add your parameters file `params.py` to the parameters folder as in the `standard_params.py` file
++ Create your parameters file `parameters/params.py` to the parameters folder as in the `params.py` file
