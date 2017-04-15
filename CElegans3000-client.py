@@ -6,7 +6,7 @@ import pickle
 import robot_manager.robot as Robot
 import sensors_manager.wifi_manager as wifi_manager
 import sensors_manager.ultra_sound as ultra_sound
-from parameters.param import *
+from parameters.params import *
 
 class Body:
 	def __init__(self,tcp_id=TCP_IP_SERVER,tcp_port=TCP_PORT):
