@@ -1,4 +1,5 @@
 *.pyc
-./parameters/params.py
+parameters/params.py
+*.swp
 *~
 
