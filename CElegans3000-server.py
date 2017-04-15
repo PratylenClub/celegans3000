@@ -5,17 +5,17 @@ import random
 from parameters.params import *
 
 class NN:
-	def __init__(self,model_file,tcp_ip=TCP_IP,tcp_port=TCP_PORT,synchronous=True):
+	def __init__(self,model_file,tcp_ip=TCP_IP_CLIENT,tcp_port=TCP_PORT,synchronous=True):
 		model = p.load(open(model_file,"rb"))
 		self.neural_network = model["Neural Network"]
 		self.cell_states = model["Cells_state"]
 		self.sens = ["ULTRA_SOUND"]
 		self.firing_neurons = []
 		self.brain = {}
-		self.build_brain()
-		self.initialize_brain()
 		self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
 		self.synchronous = synchronous
+		self.build_brain()
+		self.initialize_brain()
 
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.bind((tcp_ip,tcp_port))
@@ -83,7 +83,7 @@ class NN:
 		if self.cell_states[neuron_receptor][NEXT_STATE] >= threshold:
 			self.firing_neurons.append(neuron_receptor)
 
-	def touch_nose_sensorial_stimulus(self,neuron_receptor,weight,signal=SIGNAL,threshold=STANDARD_THRESHOLD_VALUE):
+	def touch_nose_sensorial_stimulus(self,neuron_receptor,weight,signal=STANDARD_SIGNAL_VALUE,threshold=STANDARD_THRESHOLD_VALUE):
 		if signal < 20: #closer than 20cm
 			self.firing_neurons.append(neuron_receptor)
 
