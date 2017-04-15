@@ -6,23 +6,13 @@ import pickle
 import robot_manager.robot as Robot
 import sensors_manager.wifi_manager as wifi_manager
 import sensors_manager.ultra_sound as ultra_sound
-LEFT_TRIM   = 50
-RIGHT_TRIM  = 50
-TCP_IP = '192.168.43.156'
-TCP_PORT = 5005
-BUFFER_SIZE = 1024
-END_TASK_SIGNAL = "END_TASK"
-NB_TRIALS_ULTRASOUND = 3
-DELTA_TIME_ULTRASOUND = 0.2
-def print_me(*a):
-	print a
+from parameters.param import *
 
 class Body:
-	def __init__(self,tcp_id=TCP_IP,tcp_port=TCP_PORT):
+	def __init__(self,tcp_id=TCP_IP_SERVER,tcp_port=TCP_PORT):
 		self.energy = 100
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.connect((tcp_id, tcp_port))
-		#self.motor_actions = {'MOTOR_RIGHT':print_me, 'MOTOR_LEFT':print_me}
 		self.motor_actions = {'MOTOR_RIGHT':self.run_right_motor, 'MOTOR_LEFT':self.run_left_motor, 'MOTORS':self.run_motors}
 		self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 
@@ -57,7 +47,6 @@ class Body:
 
 	def run(self):
 		while 1:
-			#time.sleep(0.5)
 			sensorial_signal = self.get_sensory_signals()
 			sensorial_signal_pickle = pickle.dumps(sensorial_signal,-1)
 			print "sending: ", sensorial_signal
