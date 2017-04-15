@@ -9,7 +9,7 @@ import sensors_manager.ultra_sound as ultra_sound
 from parameters.params import *
 
 class Body:
-	def __init__(self,tcp_id=TCP_IP_SERVER,tcp_port=TCP_PORT):
+	def __init__(self,tcp_id=TCP_IP,tcp_port=TCP_PORT):
 		self.energy = 100
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.connect((tcp_id, tcp_port))

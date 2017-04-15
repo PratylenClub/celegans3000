@@ -5,7 +5,7 @@ import random
 from parameters.params import *
 
 class NN:
-	def __init__(self,model_file,tcp_ip=TCP_IP_CLIENT,tcp_port=TCP_PORT,synchronous=True):
+	def __init__(self,model_file,tcp_ip=TCP_IP,tcp_port=TCP_PORT,synchronous=True):
 		model = p.load(open(model_file,"rb"))
 		self.neural_network = model["Neural Network"]
 		self.cell_states = model["Cells_state"]
