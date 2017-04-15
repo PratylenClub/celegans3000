@@ -2,34 +2,20 @@ import socket
 import pickle as p
 import time
 import random
-
-TCP_IP = '192.168.43.156'
-TCP_PORT = 5005
-BUFFER_SIZE = 1024
-
-SIGNAL=1.0
-CURRENT_STATE = 0
-NEXT_STATE = 1
-UPDATE = 2
-LEFT_TRIM   = 0
-RIGHT_TRIM  = 0
-TIME_STEP = 0.5
-THRESHOLD = 50
-BASAL_STATE = 0
-MAX_INIT_STATE = 10
-DELTA_POLARIZATION = 0.1
+from parameters.params import *
 
 class NN:
-	def __init__(self,model_file,tcp_ip=TCP_IP,tcp_port=TCP_PORT):
+	def __init__(self,model_file,tcp_ip=TCP_IP,tcp_port=TCP_PORT,synchronous=True):
 		model = p.load(open(model_file,"rb"))
 		self.neural_network = model["Neural Network"]
 		self.cell_states = model["Cells_state"]
 		self.sens = ["ULTRA_SOUND"]
 		self.firing_neurons = []
-		#self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 		self.brain = {}
 		self.build_brain()
 		self.initialize_brain()
+		self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
+		self.synchronous = synchronous
 
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.socket.bind((tcp_ip,tcp_port))
@@ -43,14 +29,28 @@ class NN:
 			self.brain[spiking] = {}
 			for receptor,weight in self.neural_network[spiking].iteritems():
 				if spiking == "ULTRA_SOUND":
+					self.brain[spiking][receptor] = {"function":self.touch_nose_sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+					#self.brain[spiking][receptor] = {"function":self.sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+				elif spiking == "WIFI_SIGNAL":
+					self.brain[spiking][receptor] = {"function":self.sensorial_stimulus_food,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+				elif spiking == "NO_SIGNAL":
 					self.brain[spiking][receptor] = {"function":self.sensorial_stimulus,"parameters":{"neuron_receptor":receptor,"weight":weight}}
 				else:
-					if receptor == "MOTOR_LEFT":
-						self.brain[spiking][receptor] = {"function":self.excite_muscle_left,"parameters":{"muscle":receptor,"weight":weight}}
-					if receptor == "MOTOR_RIGHT":
-						self.brain[spiking][receptor] = {"function":self.excite_muscle_right,"parameters":{"muscle":receptor,"weight":weight}}
+					if self.synchronous:
+						if receptor == "MOTOR_LEFT":
+							self.brain[spiking][receptor] = {"function":self.accumulate_motor,"parameters":{"muscle":receptor,"weight":weight}}
+						if receptor == "MOTOR_RIGHT":
+							self.brain[spiking][receptor] = {"function":self.accumulate_motor,"parameters":{"muscle":receptor,"weight":weight}}
+					else:
+						if receptor == "MOTOR_LEFT":
+							self.brain[spiking][receptor] = {"function":self.excite_muscle_left,"parameters":{"muscle":receptor,"weight":weight}}
+						if receptor == "MOTOR_RIGHT":
+							self.brain[spiking][receptor] = {"function":self.excite_muscle_right,"parameters":{"muscle":receptor,"weight":weight}}
 					if receptor is not None and "MOTOR" not in receptor:
 						self.brain[spiking][receptor] = {"function":self.depolarize_neuron,"parameters":{"neuron_receptor":receptor,"weight":weight}}
+
+	def accumulate_motor(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
+		self.muscles_values[muscle] += weight * signal
 
 	def initialize_brain(self,max_initial_state=MAX_INIT_STATE):
 		for cell in self.cell_states:
@@ -69,33 +69,44 @@ class NN:
 		else:
 			self.cell_states[cell][CURRENT_STATE] = 0
 
-	def depolarize_neuron(self,neuron_receptor,weight,signal=SIGNAL,threshold = THRESHOLD):	
+	def depolarize_neuron(self,neuron_receptor,weight,signal=STANDARD_SIGNAL_VALUE,threshold = STANDARD_THRESHOLD_VALUE):	
 		self.cell_states[neuron_receptor][NEXT_STATE] = self.cell_states[neuron_receptor][CURRENT_STATE] + weight * signal
 		self.cell_states[neuron_receptor][UPDATE] = True
 		#print self.cell_states[neuron_receptor][NEXT_STATE]
-		if self.cell_states[neuron_receptor][NEXT_STATE] >= THRESHOLD:
+		if self.cell_states[neuron_receptor][NEXT_STATE] >= threshold:
 			self.firing_neurons.append(neuron_receptor)
 
-	def sensorial_stimulus(self,neuron_receptor,weight,signal=SIGNAL,threshold = THRESHOLD):
+	def sensorial_stimulus(self,neuron_receptor,weight,signal=STANDARD_SIGNAL_VALUE,threshold = STANDARD_THRESHOLD_VALUE):
 		sensorial_signal = signal*weight
 		self.cell_states[neuron_receptor][NEXT_STATE] = self.cell_states[neuron_receptor][CURRENT_STATE]+sensorial_signal
 		self.cell_states[neuron_receptor][UPDATE] = True
-		if self.cell_states[neuron_receptor][NEXT_STATE] >= THRESHOLD:
+		if self.cell_states[neuron_receptor][NEXT_STATE] >= threshold:
 			self.firing_neurons.append(neuron_receptor)
 
-	def excite_muscle_right(self,muscle,weight,signal=SIGNAL):
+	def touch_nose_sensorial_stimulus(self,neuron_receptor,weight,signal=SIGNAL,threshold=STANDARD_THRESHOLD_VALUE):
+		if signal < 20: #closer than 20cm
+			self.firing_neurons.append(neuron_receptor)
+
+	def sensorial_stimulus_food(self,neuron_receptor,weight,signal=STANDARD_SIGNAL_VALUE,threshold=STANDARD_THRESHOLD_VALUE):
+		self.sensorial_stimulus(neuron_receptor,weight,signal=signal,threshold = threshold)
+
+	def excite_muscles(self,):
+		if self.muscles_values["MOTOR_RIGHT"] + self.muscles_values["MOTOR_LEFT"] > 0:
+			order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
+			time.sleep(TIME_STEP)
+			self.conn.send(order_pickle)
+			self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
+
+	def excite_muscle_right(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTOR_RIGHT",(weight,signal)],-1)
-		print "sending ",["MOTOR_RIGHT",(weight,signal)]
-		time.sleep(0.7)
+		time.sleep(TIME_STEP)
 		self.conn.send(order_pickle)
 		#self.body.right(int(angular_speed), angular_time)
 
-	def excite_muscle_left(self,muscle,weight,signal=SIGNAL):
+	def excite_muscle_left(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTOR_LEFT",(weight,signal)],-1)
-		print "sending ", ["MOTOR_LEFT",(weight,signal)]
-		time.sleep(0.7)
+		time.sleep(TIME_STEP)
 		self.conn.send(order_pickle)
-		#self.body.left(int(angular_speed), angular_time)
 
 	def fire_action(self,neuron_firing,**params):
 		for neuron_receptor in self.brain[neuron_firing]:
@@ -125,7 +136,8 @@ class NN:
 		for cell in self.cell_states:
 			self.update_cell(cell)
 			self.polarize_cell(cell)
-		time.sleep(0.7)
+		if self.synchronous:
+			self.excite_muscles()
 		kill_signal = ["END_TASK",(kill_user,)]
 		print "sending ", kill_signal
 		self.conn.send(p.dumps(kill_signal,-1))
@@ -139,7 +151,7 @@ class NN:
 		self.conn.close()
 
 nn = NN("connectome_manager/models/celegans3000.pickle")
-nn.run(10)
+nn.run(30)
 
 
 
