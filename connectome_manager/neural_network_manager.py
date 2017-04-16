@@ -100,7 +100,7 @@ def connectome_data_to_NN_model(connectome_file,
 	p.dump({"Neural Network":Neural_Network, "Cells_state":Cells_state, "Cells_types":Cells_types} ,open(model_file,"wb"))
 
 if __name__ == "__main__":
-	
+	"""
 	connectome_file = "data/connectome_clean_data/Connectome.csv"
 	muscles_file = "data/connectome_clean_data/Neurons_to_Muscles.csv"
 	sensor_file = "data/connectome_clean_data/Sensory.csv"
@@ -109,10 +109,24 @@ if __name__ == "__main__":
 	sensory_cells_2_sensors_pickle = "data/connectome_clean_data/sensory_2_sensors.pickle"
 	model_file = "models/celegans3000.pickle"
 	connectome_data_to_NN_model(connectome_file,muscles_file,sensor_file,neurotransmitters_pickle,muscle_2_motor_pickle,sensory_cells_2_sensors_pickle,model_file)
-	"""
+	
 	connectome_file = "data/connectome_clean_data/Connectome.csv"
 	muscles_file = "data/connectome_clean_data/Neurons_to_Muscles.csv"
 	sensor_file = "data/connectome_clean_data/Sensory.csv"
 	model_file = "models/celegans3000_full.pickle"
 	connectome_data_to_NN_model(connectome_file,muscles_file,sensor_file,model_file=model_file)
 	"""
+	connectome_file = "data/connectome_neuroml/Connectome.csv"
+	muscles_file = "data/connectome_neuroml/Neurons_to_Muscles.csv"
+	sensor_file = "data/connectome_neuroml/Sensory.csv"
+	neurotransmitters_pickle = "data/connectome_neuroml/Neurotransmiters_2_coefficient.pickle"
+	muscle_2_motor_pickle = "data/connectome_neuroml/muscle_2_motor.pickle"
+	sensory_cells_2_sensors_pickle = "data/connectome_neuroml/sensory_2_sensors.pickle"
+	model_file = "models/celegans3000_neuroml.pickle"
+	connectome_data_to_NN_model(connectome_file,muscles_file,sensor_file,neurotransmitters_pickle,muscle_2_motor_pickle,sensory_cells_2_sensors_pickle,model_file)
+	
+	connectome_file = "data/connectome_neuroml/Connectome.csv"
+	muscles_file = "data/connectome_neuroml/Neurons_to_Muscles.csv"
+	sensor_file = "data/connectome_neuroml/Sensory.csv"
+	model_file = "models/celegans3000_full_neuroml.pickle"
+	connectome_data_to_NN_model(connectome_file,muscles_file,sensor_file,model_file=model_file)	
