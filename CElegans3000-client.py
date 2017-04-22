@@ -70,7 +70,7 @@ class Body:
 			sensorial_signal = self.get_sensory_signals()
 			sensorial_signal_pickle = pickle.dumps(sensorial_signal,-1)
 			print "sending: ", sensorial_signal
-			self.socket.send(sensorial_signal_pickle)
+			self.socket.sendall(sensorial_signal_pickle)
 			time.sleep(1)
 			while 1:
 				order_pickle = self.socket.recv(BUFFER_SIZE)
