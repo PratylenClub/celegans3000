@@ -31,16 +31,16 @@ class neural_network:
                 self.nb_neurons_firing = {type_neuron: 0 for type_neuron in np.unique(self.model["Cells_types"].values())}
 
 if __name__ == "__main__":
-        celegans = pickle.load(open("celegans3000_full_neuroml.pickle","rb"))
+        celegans = pickle.load(open("connectome_manager/models/celegans3000_full_neuroml.pickle","rb"))
         celegans_nn = neural_network(celegans)
         I = np.ones(100)*3
         dt = 0.01
         results = {}
-        for neuron in nn.neural_network.keys():
+        for neuron in celegans_nn.neural_network.keys()[0:2]:
                 for i in range(1000):
-                        nn.neural_network[neuron].update_I(I)
-                        nn.update_neural_network()
+                        celegans_nn.neural_network[neuron].update_I(I)
                         celegans_nn.update_neural_network()
-                results[neuron] = nn.nb_neurons_firing 
-        pickle.dump(results,open("RESULTS","rb"))
-"""
+                        celegans_nn.update_neural_network()
+                results[neuron] = celegans_nn.nb_neurons_firing 
+        print results
+        #pickle.dump(results,open("RESULTS","rb"))
