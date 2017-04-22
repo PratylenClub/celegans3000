@@ -41,14 +41,12 @@ class Robot(object):
     def _left_speed(self, speed):
         """Set the speed of the left motor, taking into account its trim offset.
         """
-        assert 0 <= speed <= 255, 'Speed must be a value between 0 to 255 inclusive!'
         speed = max(self._left_trim, min(255, self._left_trim+abs(speed)))  # Constrain speed to 0-255 after trimming.
         self._left.setSpeed(speed)
 
     def _right_speed(self, speed):
         """Set the speed of the right motor, taking into account its trim offset.
         """
-        assert 0 <= speed <= 255, 'Speed must be a value between 0 to 255 inclusive!'
         speed = max(self._right_trim, min(255, self._right_trim+abs(speed)))  # Constrain speed to 0-255 after trimming.
         self._right.setSpeed(speed)
 
@@ -108,7 +106,7 @@ class Robot(object):
         spin for that amount of time and then stop.
         """
         # Set motor speed and move both forward.
-        self._right_speed(speed)
+        self._right_speed(abs(speed))
         if speed < 0:
             self._right.run(Adafruit_MotorHAT.BACKWARD)
         else:
@@ -149,7 +147,7 @@ class Robot(object):
         spin for that amount of time and then stop.
         """
         # Set motor speed and move both forward.
-        self._left_speed(speed)
+        self._left_speed(abs(speed))
         if speed < 0:
             self._left.run(Adafruit_MotorHAT.BACKWARD)
         else: 
