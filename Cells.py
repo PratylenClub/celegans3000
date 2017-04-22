@@ -112,8 +112,8 @@ class LIF_neuron(neuron):
         def __init__(self,
                 dt      = 0.01,               
                 Rm      = 1,
-                Cm      = 10,
-                tau_ref = 4,
+                Cm      = 2,
+                tau_ref = 1,
                 Vth     = 1,
                 V_spike = 0.5,
                 U_res   = 0,
@@ -170,6 +170,7 @@ class LIF_neuron(neuron):
                 return has_fired
 
 if __name__ == "__main__":
+        import matplotlib.pyplot as plt
         n = LIF_neuron()
         n2 = LIF_neuron()
         m  = muscle()
@@ -178,5 +179,9 @@ if __name__ == "__main__":
         n.append_neighbor({"m":m})
         print n.neighbors
         print n.I_local
-        n.update_I(2)
-        print n.I_local
+        v = []
+        for i in range(int(20*1./n2.dt)):
+                n2.update(2)
+                v.append(n2.Vm)
+        plt.plot(range(int(20*1./n2.dt)),v)
+        plt.show()
