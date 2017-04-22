@@ -1,14 +1,19 @@
-from Neuron import LIF_neuron
+from Cells import LIF_neuron, muscle
 import pickle
 import pandas as pd
 import numpy as np
+
+MUSCLE_TYPE = "Muscle"
 
 class neural_network:
         def __init__(self, model):
                 self.model = model
                 self.neural_network = {}
-                for neuron_name,n in self.model["Cells_types"].iteritems():
-                        self.neural_network[neuron_name] = LIF_neuron()
+                for neuron_name,neuron_type in self.model["Cells_types"].iteritems():
+                        if neuron_type == MUSCLE_TYPE:
+                                self.neural_network[neuron_name] = muscle()
+                        else:
+                                self.neural_network[neuron_name] = LIF_neuron()
                 for neuron_name,n in self.model["Neural Network"].iteritems():
                         for neuron_name_2,weight in n.iteritems():
                                 self.neural_network[neuron_name].append_neighbor({neuron_name_2:{"Cell":self.neural_network[neuron_name_2],"Weight":weight}})
