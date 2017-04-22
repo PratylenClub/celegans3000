@@ -1,6 +1,29 @@
 import numpy as np
 
-class neuron:
+class cell:
+        def __init__(self,
+                dt,
+                I_dt):
+                self.dt = dt
+                self.I_dt = I_dt
+                self.I_local = np.ones(self.I_dt * 1.0 / self.dt)*1.5
+                self.current_I_index = 0
+                self.neighbors = {}
+
+        def update_I(self,I,set_value=False):
+                if set_value:
+                        self.I_local[self.current_I_index+1:] = I[:self.I_local.size - (self.current_I_index+1)]
+                        self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] = I[self.I_local.size - (self.current_I_index + 1):]
+                else:
+                        self.I_local[self.current_I_index+1:] += I[:self.I_local.size - (self.current_I_index+1)]
+                        self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] += I[self.I_local.size - (self.current_I_index + 1):]
+              
+        def append_neighbor(self, neighbor):
+                self.neighbors[neighbor.keys()[0]] = neighbor[neighbor.keys()[0]]
+
+
+
+class neuron(cell):
         def __init__(self,
                 dt = 1,
                 Vth = 1,
@@ -57,9 +80,6 @@ class neuron:
                         self.update_I(I[i:i+self.I_local.size],set_value)
                         self.update()
                 return np.asarray(range(0,Vm.size)) * self.dt, Vm
-
-        def append_neighbor(self, neighbor):
-                self.neighbors[neighbor.keys()[0]] = neighbor[neighbor.keys()[0]]
 
 
 
