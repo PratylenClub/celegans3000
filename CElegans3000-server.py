@@ -9,7 +9,7 @@ class NN:
 		model = p.load(open(model_file,"rb"))
 		self.neural_network = model["Neural Network"]
 		self.cell_states = model["Cells_state"]
-		self.sens = ["ULTRA_SOUND"]
+		self.sens = ["ULTRA_SOUND","WIFI_SIGNAL"]
 		self.firing_neurons = []
 		self.brain = {}
 		self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
@@ -41,11 +41,20 @@ class NN:
 							self.brain[spiking][receptor] = {"function":self.accumulate_motor,"parameters":{"muscle":receptor,"weight":weight}}
 						if receptor == "MOTOR_RIGHT":
 							self.brain[spiking][receptor] = {"function":self.accumulate_motor,"parameters":{"muscle":receptor,"weight":weight}}
+						if receptor == "MOTOR_FORWARD":
+							self.brain[spiking][receptor] = {"function":self.accumulate_motor,"parameters":{"muscle":receptor,"weight":weight}}
+						if receptor == "MOTOR_BACKWARD":
+							self.brain[spiking][receptor] = {"function":self.accumulate_motor,"parameters":{"muscle":receptor,"weight":weight}}
 					else:
 						if receptor == "MOTOR_LEFT":
 							self.brain[spiking][receptor] = {"function":self.excite_muscle_left,"parameters":{"muscle":receptor,"weight":weight}}
 						if receptor == "MOTOR_RIGHT":
 							self.brain[spiking][receptor] = {"function":self.excite_muscle_right,"parameters":{"muscle":receptor,"weight":weight}}
+						if receptor == "MOTOR_FORWARD":
+							self.brain[spiking][receptor] = {"function":self.excite_muscles_forward,"parameters":{"muscle":receptor,"weight":weight}}
+						if receptor == "MOTOR_BACKWARD":
+							self.brain[spiking][receptor] = {"function":self.excite_muscles_backward,"parameters":{"muscle":receptor,"weight":weight}}
+
 					if receptor is not None and "MOTOR" not in receptor:
 						self.brain[spiking][receptor] = {"function":self.depolarize_neuron,"parameters":{"neuron_receptor":receptor,"weight":weight}}
 
@@ -53,7 +62,8 @@ class NN:
 		self.muscles_values[muscle] += weight * signal
 
 	def initialize_brain(self,max_initial_state=MAX_INIT_STATE):
-		for cell in self.cell_states:
+		for cell in self.cell_states.keys():
+			self.cell_states[cell] = []
 			self.cell_states[cell].append(random.randint(0,max_initial_state)) #initial state chosen randomly 
 			self.cell_states[cell].append(0) # next state at zero
 			self.cell_states[cell].append(False) # not updated
@@ -70,10 +80,11 @@ class NN:
 			self.cell_states[cell][CURRENT_STATE] = 0
 
 	def depolarize_neuron(self,neuron_receptor,weight,signal=STANDARD_SIGNAL_VALUE,threshold = STANDARD_THRESHOLD_VALUE):	
+		#print "DEPOL"+neuron_receptor+str(weight*signal), self.cell_states[neuron_receptor]
 		self.cell_states[neuron_receptor][NEXT_STATE] = self.cell_states[neuron_receptor][CURRENT_STATE] + weight * signal
 		self.cell_states[neuron_receptor][UPDATE] = True
 		#print self.cell_states[neuron_receptor][NEXT_STATE]
-		if self.cell_states[neuron_receptor][NEXT_STATE] >= threshold:
+		if self.cell_states[neuron_receptor][NEXT_STATE] >= threshold and neuron_receptor not in self.firing_neurons:
 			self.firing_neurons.append(neuron_receptor)
 
 	def sensorial_stimulus(self,neuron_receptor,weight,signal=STANDARD_SIGNAL_VALUE,threshold = STANDARD_THRESHOLD_VALUE):
@@ -91,11 +102,21 @@ class NN:
 		self.sensorial_stimulus(neuron_receptor,weight,signal=signal,threshold = threshold)
 
 	def excite_muscles(self,):
-		if self.muscles_values["MOTOR_RIGHT"] + self.muscles_values["MOTOR_LEFT"] > 0:
+		if abs(self.muscles_values["MOTOR_RIGHT"] + self.muscles_values["MOTOR_LEFT"]) > 0:
 			order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
 			time.sleep(TIME_STEP)
 			self.conn.send(order_pickle)
 			self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
+
+	def excite_muscles_forward(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
+		order_pickle = p.dumps(["MOTORS",(weight*signal,weight*signal)],-1)
+		time.sleep(TIME_STEP)
+		self.conn.send(order_pickle)
+
+	def excite_muscles_backward(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
+		order_pickle = p.dumps(["MOTORS",(-weight*signal,-weight*signal)],-1)
+		time.sleep(TIME_STEP)
+		self.conn.send(order_pickle)
 
 	def excite_muscle_right(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTOR_RIGHT",(weight,signal)],-1)
@@ -122,7 +143,6 @@ class NN:
 		self.firing_neurons.remove(neuron)
 
 	def update_neural_network(self,kill_user=0):
-		print self.firing_neurons
 		data_pickle = self.conn.recv(BUFFER_SIZE)
 		if not data_pickle:
 			return 1
@@ -130,9 +150,11 @@ class NN:
 		print "receiving: ", sensory_data
 		for sens in sensory_data:
 			self.fire_action(sens, signal=sensory_data[sens])
-		for neuron in self.firing_neurons:
+		print self.firing_neurons
+		for neuron in self.firing_neurons[:]:
 			self.fire_action(neuron)
 			self.reset_neuron(neuron)
+		print self.firing_neurons
 		for cell in self.cell_states:
 			self.update_cell(cell)
 			self.polarize_cell(cell)
@@ -150,8 +172,8 @@ class NN:
 				break
 		self.conn.close()
 
-nn = NN("connectome_manager/models/celegans3000_neuroml.pickle")
-nn.run(30)
+nn = NN("connectome_manager/models/celegans3000.pickle")
+nn.run(100)
 
 
 

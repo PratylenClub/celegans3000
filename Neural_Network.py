@@ -128,7 +128,9 @@ if __name__ == "__main__":
         nose_sensitive_neurons = ['ALML','ALMR','AVM','IL1VR','IL1VL','IL1DR','IL1DL','IL1R','IL1L']
         tail_sensitive_neurons  = ['PLML','PLMR','PVM']
         food = ['ADER', 'ADEL']
+        food_gpg = ["ADFL", "ADFR", "ASGR","ASGL","ASIL","ASIR","ASJL","ASJR"]
         chemosensory = ['ASEL','ASKL','ASKR','PHAL','PHAR','PHBL','PHBR']
+        nose_gpg_sensitive_neurons = ["ASHL", "ASHR", "FLPL", "FLPR", "IL1VL", "IL1VR", "OLQDL", "OLQDR", "OLQVL", "OLQVR"]
 
         VA = ['VA'+str(i) for i in range(1,12)]
         DA = ['DA'+str(i) for i in range(1,10)]
@@ -138,11 +140,13 @@ if __name__ == "__main__":
         nose_excitation = {neuron: 1.5 for neuron in nose_sensitive_neurons}
         tail_excitation = {neuron: 1.5 for neuron in tail_sensitive_neurons}
         food_excitation = {neuron: 1.5 for neuron in food}
+        food_gpg_excitation = {neuron: 1.5 for neuron in food_gpg}
         chemosensory_excitation = {neuron: 1.5 for neuron in chemosensory}
+        nose_gpg_excitation = {neuron:1.5 for neuron in nose_gpg_sensitive_neurons}
         #output_formats = [{LIST_NEURONS_OUTPUT: nose_sensitive_neurons, AGGREGATION_FUNCTION: np.sum}]
-        output_formats = [{LIST_NEURONS_OUTPUT: tail_sensitive_neurons, AGGREGATION_FUNCTION: np.sum}]
+        output_formats = [{LIST_NEURONS_OUTPUT: nose_gpg_sensitive_neurons, AGGREGATION_FUNCTION: np.sum}]
 
-        print celegans_nn.activate_system(nose_excitation, time_activation=20, output_formats = output_formats, final_aggregation_function=None)
+        print celegans_nn.activate_system(food_gpg_excitation, time_activation=20, output_formats = output_formats, final_aggregation_function=None)
 
         for i,neuron_name in enumerate(VA):
                 plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"r-")

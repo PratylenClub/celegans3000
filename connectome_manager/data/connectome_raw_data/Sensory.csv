@@ -1,6 +1,6 @@
 Neuron;Landmark;Landmark Position;Weight;Neurotransmitter;Neuropeptides;Function
-ADEL;Sensory;0;1;Dopamine;;mechanosensory
-ADER;Sensory;0;1;Dopamine;;mechanosensory
+ADEL;Sensory;0;1;Dopamine;;mechanosensory, food
+ADER;Sensory;0;1;Dopamine;;mechanosensory, food
 ADFL;Sensory;0;1;Serotonin;;chemosensory, gpg-food
 ADFR;Sensory;0;1;Serotonin;;chemosensory, gpg-food
 ADLL;Sensory;0;1;FMRFamide;;chemosensory, odorsensory, nociceptive

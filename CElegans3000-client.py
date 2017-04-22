@@ -15,7 +15,9 @@ class Body:
 		if self.embodied:
 			import robot_manager.robot as Robot
 			import sensors_manager.wifi_manager as wifi_manager
+			self.wifi_manager = wifi_manager
 			import sensors_manager.ultra_sound as ultra_sound
+			self.ultra_sound = ultra_sound
 			self.body = Robot.Robot(left_trim=LEFT_TRIM, right_trim=RIGHT_TRIM)
 		else:
 			import simulator_manager.simulator as Simulator
@@ -53,12 +55,12 @@ class Body:
 	def get_sensory_signals(self):
 		self.energy -= 10
 		if self.embodied:
-			wifi_signal = wifi_manager.get_wifi_quality()
-			ultra_sound_signal = ultra_sound.return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
+			wifi_signal = self.wifi_manager.get_wifi_quality()
+			ultra_sound_signal = self.ultra_sound.return_distance_to_obstacle(NB_TRIALS_ULTRASOUND ,DELTA_TIME_ULTRASOUND )
 			print "ULTRA SOUND",ultra_sound_signal
 			print "WIFI_SIGNAL",wifi_signal
 			print "FOOD_LEVEL",self.energy
-			return {"ULTRA_SOUND":ultra_sound_signal, "WIFI_SIGNAL":(max(100,self.energy)-self.energy)*wifi_signal}#, "FOOD_LEVEL":self.energy}
+			return {"ULTRA_SOUND":ultra_sound_signal, "WIFI_SIGNAL":wifi_signal, "FOOD_LEVEL":self.energy}#(max(100,self.energy)-self.energy)*wifi_signal}#, "FOOD_LEVEL":self.energy}
 		else:
 			return {"ULTRA_SOUND":self.body.return_ultra_sound_sensory(), "WIFI_SIGNAL":self.body.return_wifi_signal()}
 		return {"ULTRA_SOUND":0, "WIFI_SIGNAL":0}#, "FOOD_LEVEL":self.energy}
@@ -69,6 +71,7 @@ class Body:
 			sensorial_signal_pickle = pickle.dumps(sensorial_signal,-1)
 			print "sending: ", sensorial_signal
 			self.socket.send(sensorial_signal_pickle)
+			time.sleep(1)
 			while 1:
 				order_pickle = self.socket.recv(BUFFER_SIZE)
 				order = pickle.loads(order_pickle)

@@ -143,7 +143,7 @@ class simulator:
         return 0
 
     def check_obstacle(self,x,y):
-        if x < self.limits_x[0] or y < self.limits_y[0] or x > self.limits_x[1] or y > self.limits_y[1]:
+        if x <= self.limits_x[0] or y <= self.limits_y[0] or x >= self.limits_x[1] or y >= self.limits_y[1]:
             return 1
         index_x = max(min(int((round(x, self.precision)-self.limits_x[0])/self.step),self.x_vals_grid.size - 1),0)
         index_y = max(min(int((round(y, self.precision)-self.limits_y[0])/self.step),self.y_vals_grid.size - 1),0)
@@ -156,7 +156,7 @@ class simulator:
             return 100
 
     def return_wifi_signal(self):
-        return 1 - (self.x**2 + self.y**2) 
+        return 100#1 - (self.x**2 + self.y**2) 
 
 if __name__ == "__main__":
     import random
