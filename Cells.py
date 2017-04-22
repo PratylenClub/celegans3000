@@ -3,12 +3,15 @@ import numpy as np
 class cell:
         def __init__(self,
                 dt,
-                I_dt):
+                I_dt,
+                Vm0     = None):
                 self.dt = dt
                 self.I_dt = I_dt
                 self.I_local = np.ones(self.I_dt * 1.0 / self.dt)*1.5
                 self.current_I_index = 0
                 self.neighbors = {}
+                self.Vm = 0
+                if Vm0 is not None: self.Vm = Vm0
 
         def update_I(self,I,set_value=False):
                 if set_value:
@@ -18,21 +21,23 @@ class cell:
                         self.I_local[self.current_I_index+1:] += I[:self.I_local.size - (self.current_I_index+1)]
                         self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] += I[self.I_local.size - (self.current_I_index + 1):]
               
+        def update(self):
+                self.Vm = self.I_local[self.current_I_index]
+                self.I_local[self.current_I_index] = 0
+                self.current_I_index += 1
+                if self.current_I_index == self.I_local.size:
+                        self.current_I_index = 0
+                return int(np.abs(self.Vm)>0)
+
         def append_neighbor(self, neighbor):
                 self.neighbors[neighbor.keys()[0]] = neighbor[neighbor.keys()[0]]
 
 
 class muscle(cell):
         def __init__(self, 
-                dt,
-                I_dt):
-                cell.__init__(self,dt,I_dt)
-
-        def update(self):
-                self.I_local[self.current_I_index] = 0
-                self.current_I_index += 1
-                if self.current_I_index == self.I_local.size:
-                        self.current_I_index = 0
+                dt = 0.01,
+                I_dt = 1.0):
+                cell.__init__(self,dt,I_dt)                
 
 
 class neuron(cell):
@@ -163,7 +168,7 @@ class LIF_neuron(neuron):
 if __name__ == "__main__":
         n = LIF_neuron()
         n2 = LIF_neuron()
-        m  = muscle(dt = 0.01, I_dt = 1)
+        m  = muscle()
         print n.neighbors
         n.append_neighbor({"n2":n2})
         n.append_neighbor({"m":m})
