@@ -11,7 +11,7 @@ LIST_NEURONS_OUTPUT = "LIST_NEURONS_OUTPUT"
 AGGREGATION_FUNCTION = "AGGREGATION_FUNCTION"
 
 class neural_network:
-        def __init__(self, dt, model_file, monitoring_memory_size = 1000, monitoring_neurons = []):
+        def __init__(self, dt, model_file, monitoring_period_size = 20, monitoring_neurons = []):
                 self.dt = dt
                 self.model = self.load_model(model_file)
                 self.neural_network = {}
@@ -27,14 +27,15 @@ class neural_network:
                 self.nb_neurons_firing = {type_neuron: 0 for type_neuron in np.unique(self.model["Cells_types"].values())}
 
                 self.monitoring_memory_index = 0
-                self.monitoring = monitoring_memory_size>0
-                self.monitoring_memory_size = monitoring_memory_size
+                self.monitoring = monitoring_period_size>0
+                self.monitoring_period_size = monitoring_period_size
+                self.monitoring_memory_size = int(monitoring_period_size * 1./self.dt)
                 self.monitoring_memory = pd.DataFrame(np.zeros((self.monitoring_memory_size,len(self.neural_network))),columns = self.activity.index)
 
                 if self.monitoring:
                         self.monitoring_neurons = monitoring_neurons
-                        self.ax = plt.axes(xlim=(0,self.monitoring_memory_size), ylim=(-1,10))
                         if len(self.monitoring_neurons):
+                                self.ax = plt.axes(xlim=(0,self.monitoring_memory_size), ylim=(-1,10))
                                 plt.ion()
                                 self.lines = [0 for i in self.monitoring_neurons]
                                 for i,neuron_name in enumerate(self.monitoring_neurons):
@@ -124,10 +125,33 @@ if __name__ == "__main__":
                 results[neuron] = celegans_nn.nb_neurons_firing 
         print results
 
-        
-        output_formats = [{LIST_NEURONS_OUTPUT:['VA'+str(i) for i in range(1,12)] , AGGREGATION_FUNCTION: np.sum}]
-        print celegans_nn.activate_system({'ALML':1.5}, time_activation=30, output_formats = output_formats, final_aggregation_function=None)
+        nose_sensitive_neurons = ['ALML','ALMR','AVM','IL1VR','IL1VL','IL1DR','IL1DL','IL1R','IL1L']
+        tail_sensitive_neurons  = ['PLML','PLMR','PVM']
+        food = ['ADER', 'ADEL']
+        chemosensory = ['ASEL','ASKL','ASKR','PHAL','PHAR','PHBL','PHBR']
 
-        for i,neuron_name in enumerate(celegans_nn.monitoring_memory):
-                plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"-")
+        VA = ['VA'+str(i) for i in range(1,12)]
+        DA = ['DA'+str(i) for i in range(1,10)]
+        VB = ['VB'+str(i) for i in range(1,12)]
+        DB = ['DB'+str(i) for i in range(1,8)]
+
+        nose_excitation = {neuron: 1.5 for neuron in nose_sensitive_neurons}
+        tail_excitation = {neuron: 1.5 for neuron in tail_sensitive_neurons}
+        food_excitation = {neuron: 1.5 for neuron in food}
+        chemosensory_excitation = {neuron: 1.5 for neuron in chemosensory}
+        #output_formats = [{LIST_NEURONS_OUTPUT: nose_sensitive_neurons, AGGREGATION_FUNCTION: np.sum}]
+        output_formats = [{LIST_NEURONS_OUTPUT: tail_sensitive_neurons, AGGREGATION_FUNCTION: np.sum}]
+
+        print celegans_nn.activate_system(nose_excitation, time_activation=20, output_formats = output_formats, final_aggregation_function=None)
+
+        for i,neuron_name in enumerate(VA):
+                plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"r-")
+        for i,neuron_name in enumerate(VB):
+                plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"b-")
+
+        for i,neuron_name in enumerate(DA):
+                plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"y-")
+        for i,neuron_name in enumerate(DB):
+                plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"c-")
+
         plt.show()
