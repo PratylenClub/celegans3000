@@ -6,8 +6,8 @@ import numpy as np
 MUSCLE_TYPE = "Muscle"
 
 class neural_network:
-        def __init__(self, model):
-                self.model = model
+        def __init__(self, model_file):
+                self.model = self.load_model(model_file)
                 self.neural_network = {}
                 for neuron_name,neuron_type in self.model["Cells_types"].iteritems():
                         if neuron_type == MUSCLE_TYPE:
@@ -19,6 +19,9 @@ class neural_network:
                                 self.neural_network[neuron_name].append_neighbor({neuron_name_2:{"Cell":self.neural_network[neuron_name_2],"Weight":weight}})
                 self.activity = pd.Series(index = self.neural_network.keys())
                 self.nb_neurons_firing = {type_neuron: 0 for type_neuron in np.unique(self.model["Cells_types"].values())}
+
+        def load_model(self, model_file):
+                return pickle.load(open(model_file,"rb"))
 
         def update_neural_network(self):
                 for neuron_name in self.neural_network:
@@ -35,9 +38,11 @@ class neural_network:
                         self.neural_network[neuron_name].current_I_index = 0
                 self.nb_neurons_firing = {type_neuron: 0 for type_neuron in np.unique(self.model["Cells_types"].values())}
 
+
+
 if __name__ == "__main__":
-        celegans = pickle.load(open("connectome_manager/models/celegans3000_full_neuroml.pickle","rb"))
-        celegans_nn = neural_network(celegans)
+        celegans_file = "connectome_manager/models/celegans3000_full_neuroml.pickle"
+        celegans_nn = neural_network(celegans_file)
         I = np.ones(100)*3
         dt = 0.01
         results = {}
