@@ -4,13 +4,14 @@ import pandas as pd
 import numpy as np
 from parameters.params import *
 import socket
-
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 MUSCLE_TYPE = "Muscle"
 LIST_NEURONS_OUTPUT = "LIST_NEURONS_OUTPUT"
 AGGREGATION_FUNCTION = "AGGREGATION_FUNCTION"
 
 class neural_network:
-        def __init__(self, dt, model_file, monitoring_memory_size = 1000):
+        def __init__(self, dt, model_file, monitoring_memory_size = 1000, monitoring_neurons = []):
                 self.dt = dt
                 self.model = self.load_model(model_file)
                 self.neural_network = {}
@@ -28,7 +29,17 @@ class neural_network:
                 self.monitoring_memory_index = 0
                 self.monitoring = monitoring_memory_size>0
                 self.monitoring_memory_size = monitoring_memory_size
-                self.monitoring_memory = np.zeros((self.monitoring_memory_size,len(self.neural_network)))
+                self.monitoring_memory = pd.DataFrame(np.zeros((self.monitoring_memory_size,len(self.neural_network))),columns = self.activity.index)
+
+                if self.monitoring:
+                        self.monitoring_neurons = monitoring_neurons
+                        self.ax = plt.axes(xlim=(0,self.monitoring_memory_size), ylim=(-1,10))
+                        if len(self.monitoring_neurons):
+                                plt.ion()
+                                self.lines = [0 for i in self.monitoring_neurons]
+                                for i,neuron_name in enumerate(self.monitoring_neurons):
+                                        self.lines[i], = self.ax.plot(self.monitoring_memory.index,self.monitoring_memory[neuron_name],"-")
+                                plt.pause(0.5)
 
         def load_model(self, model_file):
                 return pickle.load(open(model_file,"rb"))
@@ -55,10 +66,14 @@ class neural_network:
                                 self.neural_network[neuron_name].update_I(I)
                         self.update_neural_network()
                         if self.monitoring:
-                                self.monitoring_memory[self.monitoring_memory_index,:] = self.activity
+                                self.monitoring_memory.loc[self.monitoring_memory_index] = self.activity
                                 self.monitoring_memory_index += 1
-                                if self.monitoring_memory_index > self.monitoring_memory.shape[1]:
+                                if self.monitoring_memory_index > self.monitoring_memory.shape[0]:
                                         self.monitoring_memory_index = 0
+                                if len(self.monitoring_neurons):
+                                        for i,neuron_name in enumerate(self.monitoring_neurons):
+                                                self.lines[i].set_data(self.monitoring_memory.index, self.monitoring_memory[neuron_name])
+                                        plt.pause(0.01)
                         if output_formats is not None:
                                 for i,output_format in enumerate(output_formats):
                                         output[i].append(output_format[AGGREGATION_FUNCTION](self.activity[output_format[LIST_NEURONS_OUTPUT]]))
@@ -97,7 +112,7 @@ class neural_network_server(neural_network):
 
 if __name__ == "__main__":
         celegans_file = "connectome_manager/models/celegans3000_full_neuroml.pickle"
-        celegans_nn = neural_network(0.01,celegans_file)
+        celegans_nn = neural_network(0.01,celegans_file)#,monitoring_neurons = ['VA'+str(i) for i in range(1,12)])
         I = np.ones(100)*3
         dt = 0.01
         results = {}
@@ -108,8 +123,11 @@ if __name__ == "__main__":
                         celegans_nn.update_neural_network()
                 results[neuron] = celegans_nn.nb_neurons_firing 
         print results
+
         
         output_formats = [{LIST_NEURONS_OUTPUT:['VA'+str(i) for i in range(1,12)] , AGGREGATION_FUNCTION: np.sum}]
-        print celegans_nn.activate_system({'ALML':1.5}, time_activation=4, output_formats = output_formats, final_aggregation_function=None)
+        print celegans_nn.activate_system({'ALML':1.5}, time_activation=30, output_formats = output_formats, final_aggregation_function=None)
 
-
+        for i,neuron_name in enumerate(celegans_nn.monitoring_memory):
+                plt.plot(celegans_nn.monitoring_memory.index,celegans_nn.monitoring_memory[neuron_name],"-")
+        plt.show()
