@@ -10,6 +10,7 @@ SENSORIAL_INPUT_TYPE = "Sensorial"
 SENSORIAL_NEURON_TYPE = "Sensorial_Neuron"
 MOTOR_NEURONS_TYPE = "Motor_Neuron"
 MUSCLE_TYPE = "Muscle"
+SENSORY_MOTOR_NEURON_TYPE = "Sensorial_Motor_Neuron"
 
 def connectome_data_to_NN_model(connectome_file,
 								muscles_file, 
@@ -86,11 +87,14 @@ def connectome_data_to_NN_model(connectome_file,
 		Neural_Network[cell] = {}
 		Cells_state[cell] = INITIAL_CELL_STATE 
 		Cells_types[cell] = SENSORIAL_INPUT_TYPE
-	for cell in set(set(sensor.iloc[:,OUTPUT_INDEX])):
+	for cell in set(sensor.iloc[:,OUTPUT_INDEX]):
 		Neural_Network[cell] = {}
 		Cells_state[cell] = INITIAL_CELL_STATE 
 		Cells_types[cell] = SENSORIAL_NEURON_TYPE 		
-
+	for cell in set(muscles.iloc[:,INPUT_INDEX]).intersection(set(sensor.iloc[:,OUTPUT_INDEX])):
+		Neural_Network[cell] = {}
+		Cells_state[cell] = INITIAL_CELL_STATE 
+		Cells_types[cell] = SENSORY_MOTOR_NEURON_TYPE
 	for i in xrange(connectome.index.size):
 		Neural_Network[connectome.iloc[i,INPUT_INDEX]][connectome.iloc[i,OUTPUT_INDEX]] = connectome.iloc[i,:]["Weight"]
 	for i in xrange(muscles.index.size):
