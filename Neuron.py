@@ -22,6 +22,18 @@ class cell:
                 self.neighbors[neighbor.keys()[0]] = neighbor[neighbor.keys()[0]]
 
 
+class muscle(cell):
+        def __init__(self, 
+                dt,
+                I_dt):
+                cell.__init__(self,dt,I_dt)
+
+        def update(self):
+                self.I_local[self.current_I_index] = 0
+                self.current_I_index += 1
+                if self.current_I_index == self.I_local.size:
+                        self.current_I_index = 0
+
 
 class neuron(cell):
         def __init__(self,
@@ -151,12 +163,9 @@ class LIF_neuron(neuron):
 if __name__ == "__main__":
         n = LIF_neuron()
         n2 = LIF_neuron()
+        m  = muscle(dt = 0.01, I_dt = 1)
         print n.neighbors
-        n.append_neighbor({"1":2})
-        n.Rm = 1000
-        print n.neighbors
-        #print n.update_time_duration(np.ones(100))
-        print n2.neighbors
-        print n2.Rm
+        n.append_neighbor({"n2":n2})
+        n.append_neighbor({"m":m})
         print n.neighbors
 
