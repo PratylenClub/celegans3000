@@ -14,12 +14,23 @@ class cell:
                 if Vm0 is not None: self.Vm = Vm0
 
         def update_I(self,I,set_value=False):
+                I = np.asarray(I)
+                if len(I.shape) == 0:
+                        I = np.asarray([float(I)])
+                if I.size > self.I_local.size:
+                        I = I[:self.I_local.size - 1]
+                next_I_index = self.current_I_index+1
+                if next_I_index >= self.I_local.size: next_I_index = 0
+                right_index_boundary = min(next_I_index + I.size, self.I_local.size)
+                right_piece_size = right_index_boundary - next_I_index
+                left_index_boundary = I.size - right_piece_size
+
                 if set_value:
-                        self.I_local[self.current_I_index+1:] = I[:self.I_local.size - (self.current_I_index+1)]
-                        self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] = I[self.I_local.size - (self.current_I_index + 1):]
+                        self.I_local[next_I_index:right_index_boundary] = I[:right_piece_size]
+                        self.I_local[:left_index_boundary] = I[right_piece_size:]
                 else:
-                        self.I_local[self.current_I_index+1:] += I[:self.I_local.size - (self.current_I_index+1)]
-                        self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] += I[self.I_local.size - (self.current_I_index + 1):]
+                        self.I_local[next_I_index:right_index_boundary] += I[:right_piece_size]
+                        self.I_local[:left_index_boundary] += I[right_piece_size:]
               
         def update(self):
                 self.Vm = self.I_local[self.current_I_index]
@@ -82,14 +93,7 @@ class neuron(cell):
                         self.current_I_index = 0
                 return has_fired
 
-        def update_I(self,I,set_value=False):
-                if set_value:
-                        self.I_local[self.current_I_index+1:] = I[:self.I_local.size - (self.current_I_index+1)]
-                        self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] = I[self.I_local.size - (self.current_I_index + 1):]
-                else:
-                        self.I_local[self.current_I_index+1:] += I[:self.I_local.size - (self.current_I_index+1)]
-                        self.I_local[:I.size - (self.I_local.size - (self.current_I_index + 1))] += I[self.I_local.size - (self.current_I_index + 1):]
-                        
+
         def update_time_duration(self, I,set_value=False):
                 Vm = np.zeros(I.size)
                 for i in range(I.size-self.I_local.size):
@@ -173,4 +177,6 @@ if __name__ == "__main__":
         n.append_neighbor({"n2":n2})
         n.append_neighbor({"m":m})
         print n.neighbors
-
+        print n.I_local
+        n.update_I(2)
+        print n.I_local
