@@ -60,7 +60,7 @@ class Body:
 			print "ULTRA SOUND",ultra_sound_signal
 			print "WIFI_SIGNAL",wifi_signal
 			print "FOOD_LEVEL",self.energy
-			return {"ULTRA_SOUND":ultra_sound_signal, "WIFI_SIGNAL":wifi_signal, "FOOD_LEVEL":self.energy}#(max(100,self.energy)-self.energy)*wifi_signal}#, "FOOD_LEVEL":self.energy}
+			return {"ULTRA_SOUND":ultra_sound_signal, "WIFI_SIGNAL":wifi_signal}#, "FOOD_LEVEL":self.energy}#(max(100,self.energy)-self.energy)*wifi_signal}#, "FOOD_LEVEL":self.energy}
 		else:
 			return {"ULTRA_SOUND":self.body.return_ultra_sound_sensory(), "WIFI_SIGNAL":self.body.return_wifi_signal()}
 		return {"ULTRA_SOUND":0, "WIFI_SIGNAL":0}#, "FOOD_LEVEL":self.energy}
