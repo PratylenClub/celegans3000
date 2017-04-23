@@ -145,8 +145,11 @@ class simulator:
     def check_obstacle(self,x,y):
         if x <= self.limits_x[0] or y <= self.limits_y[0] or x >= self.limits_x[1] or y >= self.limits_y[1]:
             return 1
+        if self.obstacle_encountered:
+            return 1
         index_x = max(min(int((round(x, self.precision)-self.limits_x[0])/self.step),self.x_vals_grid.size - 1),0)
         index_y = max(min(int((round(y, self.precision)-self.limits_y[0])/self.step),self.y_vals_grid.size - 1),0)
+        print index_x,index_y,self.obstacles[index_x][index_y]
         return self.obstacles[index_x][index_y]
 
     def return_ultra_sound_sensory(self):

@@ -25,7 +25,7 @@ class Body:
 
 	def run_right_motor(self,weight,signal):
 		angular_speed = signal*weight*20
-		angular_time=0.5
+		angular_time=TIME_STEP
 		if self.embodied:
 			self.body.only_right(int(angular_speed), angular_time)
 		else:
@@ -34,7 +34,7 @@ class Body:
 
 	def run_left_motor(self,weight,signal):
 		angular_speed = signal*weight*20
-		angular_time=0.5
+		angular_time=TIME_STEP
 		self.energy -= angular_time*angular_speed
 		if self.embodied:
 			self.body.only_left(int(angular_speed), angular_time)
@@ -43,7 +43,7 @@ class Body:
 
 	def run_motors(self,weight_right,weight_left):
 		print "RUN MOTORS",weight_right,weight_left
-		angular_time=1
+		angular_time=TIME_STEP
 		angular_speed_right = weight_right*10
 		angular_speed_left = weight_left*10
 		self.energy -= angular_time*(angular_speed_right + angular_speed_left)
@@ -71,7 +71,7 @@ class Body:
 			sensorial_signal_pickle = pickle.dumps(sensorial_signal,-1)
 			print "sending: ", sensorial_signal
 			self.socket.sendall(sensorial_signal_pickle)
-			time.sleep(1)
+			time.sleep(TIME_STEP_SECURITY)
 			while 1:
 				order_pickle = self.socket.recv(BUFFER_SIZE)
 				order = pickle.loads(order_pickle)

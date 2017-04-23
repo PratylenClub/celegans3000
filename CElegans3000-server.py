@@ -5,7 +5,7 @@ import random
 from parameters.params import *
 
 class NN:
-	def __init__(self,model_file,tcp_ip=TCP_IP,tcp_port=TCP_PORT,synchronous=False):
+	def __init__(self,model_file,tcp_ip=TCP_IP,tcp_port=TCP_PORT,synchronous=SYNCHRONOUS):
 		model = p.load(open(model_file,"rb"))
 		self.neural_network = model["Neural Network"]
 		self.cell_states = model["Cells_state"]
@@ -104,30 +104,30 @@ class NN:
 	def excite_muscles(self,):
 		if abs(self.muscles_values["MOTOR_RIGHT"] + self.muscles_values["MOTOR_LEFT"]) > 0:
 			order_pickle = p.dumps(["MOTORS",(self.muscles_values["MOTOR_RIGHT"],self.muscles_values["MOTOR_LEFT"])],-1)
-			time.sleep(TIME_STEP)
 			self.conn.sendall(order_pickle)
 			self.muscles_values = {"MOTOR_RIGHT":0, "MOTOR_LEFT":0}
+			time.sleep(TIME_STEP+TIME_STEP_SECURITY)
 
 	def excite_muscles_forward(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTORS",(weight*signal,weight*signal)],-1)
-		time.sleep(TIME_STEP)
 		self.conn.sendall(order_pickle)
+		time.sleep(TIME_STEP+TIME_STEP_SECURITY)
 
 	def excite_muscles_backward(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTORS",(-weight*signal,-weight*signal)],-1)
-		time.sleep(TIME_STEP)
 		self.conn.sendall(order_pickle)
+		time.sleep(TIME_STEP+TIME_STEP_SECURITY)
 
 	def excite_muscle_right(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTOR_RIGHT",(weight,signal)],-1)
-		time.sleep(TIME_STEP)
 		self.conn.sendall(order_pickle)
+		time.sleep(TIME_STEP+TIME_STEP_SECURITY)
 		#self.body.right(int(angular_speed), angular_time)
 
 	def excite_muscle_left(self,muscle,weight,signal=STANDARD_SIGNAL_VALUE):
 		order_pickle = p.dumps(["MOTOR_LEFT",(weight,signal)],-1)
-		time.sleep(TIME_STEP)
 		self.conn.sendall(order_pickle)
+		time.sleep(TIME_STEP+TIME_STEP_SECURITY)
 
 	def fire_action(self,neuron_firing,**params):
 		for neuron_receptor in self.brain[neuron_firing]:
@@ -163,6 +163,7 @@ class NN:
 		kill_signal = ["END_TASK",(kill_user,)]
 		print "sending ", kill_signal
 		self.conn.sendall(p.dumps(kill_signal,-1))
+		time.sleep(TIME_STEP+TIME_STEP_SECURITY)
 		return 0
 
 	def run(self,nb_steps):
