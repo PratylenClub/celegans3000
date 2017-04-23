@@ -16,7 +16,8 @@ def return_distance_to_obstacle(nb_trials,delta_time):
         GPIO.output(GPIO_TRIGGER,True)   #Enviamos un pulso de ultrasonidos
         time.sleep(0.00001)              #Una pequeñña pausa
         GPIO.output(GPIO_TRIGGER,False)  #Apagamos el pulso
-        start = time.time()              #Guarda el tiempo actual mediante time.time()
+        start = time.time()  
+        stop = start       #Guarda el tiempo actual mediante time.time()
         while GPIO.input(GPIO_ECHO)==0:  #Mientras el sensor no reciba señal...
             start = time.time()          #Mantenemos el tiempo actual mediante time.time()
         while GPIO.input(GPIO_ECHO)==1:  #Si el sensor recibe señal...
